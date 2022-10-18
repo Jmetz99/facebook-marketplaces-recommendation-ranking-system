@@ -1,6 +1,6 @@
 # Facebook Marketplace Recommendation Ranking System
 
-## Cleaning product data and images
+## 1. Cleaning product data and images
 ### Product data
 Given that all project data except IDs were object types, the prices were stripped of £ signs and converted to float64 types:
 ```
