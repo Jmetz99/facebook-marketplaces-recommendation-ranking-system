@@ -3,11 +3,11 @@
 ## Cleaning product data and images
 ### Product data
 Given that all project data except IDs were object types, the prices were stripped of £ signs and converted to float64 types:
-    ```
+```
     df["price"] = df["price"].str.strip('£')
     df["price"] = df["price"].str.replace(',', '')
     df["price"] = df["price"].astype('float64')
-    ```
+```
 ### Product Images
 The product images were resized by first finding the ratio of the old image size to the desired image size (512):
 ```
