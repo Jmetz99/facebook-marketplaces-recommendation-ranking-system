@@ -1,4 +1,6 @@
+import pandas as pd
 from PIL import Image
+from numpy import asarray
 import os
 
 def resize_image(final_size, im):
