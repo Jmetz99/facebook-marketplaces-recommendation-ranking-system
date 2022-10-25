@@ -1,6 +1,6 @@
 import pandas as pd
  
-df = pd.read_pickle(f'/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/full_df.pickle')
+df = pd.read_csv(f'/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/full_df.csv', lineterminator="\n")
 
 classification_indices = {"Home & Garden": 0, 
 "Baby & Kids Stuff": 1, 
@@ -23,4 +23,4 @@ def index_category(category):
 
 df['category_index'] = df['category'].map(index_category)
 
-df.to_pickle('/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/indexed_data.pickle')
+df.to_csv('/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/indexed_data.csv')
