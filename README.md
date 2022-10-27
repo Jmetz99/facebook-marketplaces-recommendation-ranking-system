@@ -34,6 +34,4 @@ Importing the RESNET50 model from torch hub, an additional linear layer was adde
         self.main = nn.Sequential(self.resnet50, self.linear).to(device)
 ```
 
-This model was then fit onto the training data with training performance exceeding 35% accuracy. 
-
-![Model Performance](model_evaluation/model_performance_1.png)
+This model was then fit onto the training data with training performance exceeding 50% accuracy. 
