@@ -36,4 +36,4 @@ Importing the RESNET50 model from torch hub, an additional linear layer was adde
 
 This model was then fit onto the training data with training performance exceeding 35% accuracy. 
 
-![Model Performance](/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/model_evaluation/Screenshot 2022-10-27 at 14.49.37.png)
+[Model Performance](/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/model_evaluation/Screenshot 2022-10-27 at 14.49.37.png)
