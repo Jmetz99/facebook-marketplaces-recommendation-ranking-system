@@ -11,8 +11,16 @@ import datetime
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 
+
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 print(device)
+training_transforms = transforms.Compose([transforms.Resize(256),
+                transforms.CenterCrop(256),
+                transforms.RandomHorizontalFlip(p=0.3),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])])
+                                 
 class FBImageClassifier(torch.nn.Module):
     def __init__(self) -> None:
         super().__init__()
@@ -60,12 +68,6 @@ def train(model, data_loader, epochs=10):
 
 if __name__ == '__main__':
     training_data_path = '/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/training_data'
-    training_transforms = transforms.Compose([transforms.Resize(256),
-                transforms.CenterCrop(256),
-                transforms.RandomHorizontalFlip(p=0.3),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                 std=[0.229, 0.224, 0.225])])
     train_dataset = torchvision.datasets.ImageFolder(root=training_data_path, transform=training_transforms)
     training_data_loader = torch.utils.data.DataLoader(train_dataset, batch_size=16, shuffle=True)
     model = FBImageClassifier()
