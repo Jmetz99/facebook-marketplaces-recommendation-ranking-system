@@ -1,6 +1,6 @@
 # Facebook Marketplace Recommendation Ranking System
 
-## 1. Cleaning product data and images
+## Cleaning product data and images
 ### Product data
 Given that all project data except IDs were object types, the prices were stripped of £ signs and converted to float64 types:
 ```
@@ -23,3 +23,16 @@ Then, generating a new image and pasting the resized image within this, defining
     new_im = Image.new("RGB", (final_size, final_size))
     new_im.paste(im, ((final_size-new_image_size[0])//2, (final_size-new_image_size[1])//2))
 ``` 
+
+## Building the Model
+Importing the RESNET50 model from torch hub, an additional linear layer was added to alter the outputs image classification into 13 categories.
+
+```
+    self.resnet50 = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_resnet50', pretrained=True)
+        out_features = self.resnet50.fc.out_features
+        self.linear = nn.Linear(out_features, 13).to(device)
+        self.main = nn.Sequential(self.resnet50, self.linear).to(device)
+```
+
+This model was then fit onto the training data with training performance exceeding 35% accuracy. 
+ 
