@@ -1,13 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.optim
-import torch.backends.cudnn as cudnn
 import numpy as np
 import torchvision
 import torch.utils.data 
 from torchvision import datasets, models, transforms
 import datetime
 from tqdm import tqdm
+import os
 from torch.utils.tensorboard import SummaryWriter
 
 
@@ -60,9 +60,11 @@ def train(model, data_loader, epochs=10):
             batch_index += 1
         
         now = str(datetime.datetime.now().time())
-        torch.save(model.state_dict(), f'model_evaluation/image_model_at_{now}.pt')
-        with open(f'accuracy_{now}.txt', 'w') as f:
-            f.write('%d' %ave_accuracy)
+        path = f'model_evaluation/image_model_evaluations/image_model_at_{now}_epoch:{epoch}'
+        os.mkdir(path)
+        torch.save(model.state_dict(), f'{path}/weights.pt')
+        with open(f'{path}/accuracy_{now}.txt', 'w') as f:
+            f.write(f'{ave_accuracy}')
 
 
 if __name__ == '__main__':
