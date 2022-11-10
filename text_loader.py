@@ -27,7 +27,7 @@ class TextDatasetBert(torch.utils.data.Dataset):
         self.model.eval()
         self.max_length = max_length
 
-    def __get_item__(self ,index):
+    def __getitem__(self ,index):
         label = self.labels[index]
         label = self.encoder[label]
         label = torch.as_tensor(label)
