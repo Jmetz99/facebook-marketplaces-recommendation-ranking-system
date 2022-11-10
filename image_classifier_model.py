@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.optim
-from torch.optim import lr_scheduler
 import torch.backends.cudnn as cudnn
 import numpy as np
 import torchvision
@@ -20,7 +19,7 @@ training_transforms = transforms.Compose([transforms.Resize(256),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])])
-                                 
+
 class FBImageClassifier(torch.nn.Module):
     def __init__(self) -> None:
         super().__init__()
@@ -67,7 +66,7 @@ def train(model, data_loader, epochs=10):
 
 
 if __name__ == '__main__':
-    training_data_path = '/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/training_data'
+    training_data_path = '/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/training_image_data'
     train_dataset = torchvision.datasets.ImageFolder(root=training_data_path, transform=training_transforms)
     training_data_loader = torch.utils.data.DataLoader(train_dataset, batch_size=16, shuffle=True)
     model = FBImageClassifier()
