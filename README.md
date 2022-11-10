@@ -24,7 +24,7 @@ Then, generating a new image and pasting the resized image within this, defining
     new_im.paste(im, ((final_size-new_image_size[0])//2, (final_size-new_image_size[1])//2))
 ``` 
 
-## Building the Model
+## Building the Image Classifier
 Importing the RESNET50 model from torch hub, an additional linear layer was added to alter the outputs image classification into 13 categories.
 
 ```
@@ -34,4 +34,19 @@ Importing the RESNET50 model from torch hub, an additional linear layer was adde
         self.main = nn.Sequential(self.resnet50, self.linear).to(device)
 ```
 
-This model was then fit onto the training data with training performance exceeding 50% accuracy. 
+This model was then fit onto the training data with training performance exceeding 60% accuracy. 
+
+## Building the Description Classifier
+Firstly, the output of the BERT model was used to create embeddings for the product text descriptions:
+```
+    self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    self.model = BertModel.from_pretrained('bert-base-uncased', output_hidden_states = True)
+     
+     
+    encoded = self.tokenizer.__call__([sentence], max_length=self.max_length, padding='max_length', truncation=True)
+    encoded = {key:torch.LongTensor(value) for key, value in encoded.items()}
+    with torch.no_grad():
+        description = self.model(**encoded).last_hidden_state.swapaxes(1,2)
+```
+
+These embeddings were then fed into a convolutional neural network with 4 convolutional layers. Training performace exceeded 90% .
