@@ -7,6 +7,7 @@ from tqdm import tqdm
 import numpy as np
 import datetime
 import os
+import pickle
 from torch.utils.tensorboard import SummaryWriter
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -43,8 +44,6 @@ def train(model, dataloader, epochs=5,):
 
     criterion = nn.CrossEntropyLoss()
 
-
-
     batch_index = 0
     for epoch in range(epochs):
         accuracy = []
@@ -79,3 +78,5 @@ if __name__ == '__main__':
     num_classes = dataset.num_classes
     model = TextClassifier(num_classes)
     train(model, dataloader)
+    with open('text_decoder.pkl', 'wb') as f:
+        pickle.dump(dataset.decoder, f)
