@@ -14,7 +14,7 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 
 class TextClassifier(nn.Module):
     def __init__(self,
-                 num_classes,
+                 num_classes: int = 13,
                  input_size: int = 768
                  ):
         super().__init__()

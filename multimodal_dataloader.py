@@ -46,11 +46,10 @@ class MultiModalDataset(torch.utils.data.Dataset):
             description = self.model(**encoded).last_hidden_state.swapaxes(1,2)
         description = description.squeeze(0)
         image_id = self.image_ids[index]
-        im = Image.open(f'/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/training_image_data/{label}/{image_id}.jpg_resized.jpg')
+        im = Image.open(f'/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/resized_images/{image_id}_resized.jpg')
         resized = resize_image(512, im)
         transformed_image = training_transforms(resized)
-        image = torch.unsqueeze(transformed_image, 0)
-
+        image = torch.squeeze(transformed_image, 0)
         return (image, description), label_as_tensor
 
     @staticmethod

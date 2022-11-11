@@ -13,10 +13,12 @@ def resize_image(final_size, im):
     return new_im
 
 if __name__ == '__main__':
-    path = "images/"
+    path = '/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/images'
     dirs = os.listdir(path)
     final_size = 512
     for n, item in enumerate(dirs, 1):
-        im = Image.open('images/' + item)
+        im = Image.open(f'{path}/' + item)
         new_im = resize_image(final_size, im)
-        new_im.save(f'resized_images/{item}_resized.jpg')
+        file_name = item.replace('.jpg', '_resized.jpg')
+        new_im.save(f'/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/data/resized_images/{file_name}')
+        
