@@ -57,8 +57,8 @@ class ImageClassifier(nn.Module):
         super().__init__()
         self.resnet50 = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_resnet50', pretrained=True)
         out_features = self.resnet50.fc.out_features
-        self.linear = nn.Linear(out_features, 13).to(device)
-        self.main = nn.Sequential(self.resnet50, self.linear).to(device)
+        self.linear = nn.Linear(out_features, 13)
+        self.main = nn.Sequential(self.resnet50, self.linear)
 
     def forward(self, X):
         return self.main(X)
