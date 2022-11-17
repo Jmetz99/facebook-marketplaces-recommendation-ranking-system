@@ -21,8 +21,8 @@ class CombinedModel(torch.nn.Module):
         super(CombinedModel, self).__init__()
         self.resnet50 = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_resnet50', pretrained=True)
         out_features = self.resnet50.fc.out_features
-        self.image_linear = nn.Linear(out_features, 32)
-        self.image_model = nn.Sequential(self.resnet50, self.image_linear)
+        self.image_linear = nn.Linear(out_features, 128)
+        self.image_model = nn.Sequential(self.resnet50, nn.ReLU(), self.image_linear, nn.ReLU())
 
         self.text_model = nn.Sequential(nn.Conv1d(input_size, 256, kernel_size=3, stride=1),
                                     nn.ReLU(),
@@ -36,22 +36,23 @@ class CombinedModel(torch.nn.Module):
                                     nn.Conv1d(64, 32, kernel_size=3, stride=1),
                                     nn.ReLU(),
                                     nn.Flatten(),
-                                    nn.Linear(64, 32),
+                                    nn.Linear(64, 128),
                                     nn.ReLU())
 
-        self.linear = nn.Linear(64, num_classes)
+        self.main = nn.Sequential(nn.Linear(256, num_classes))
 
     def forward(self, X: tuple):
         image_inputs = self.image_model(X[0])
         text_inputs = self.text_model(X[1])
         comb_inputs = torch.cat((image_inputs, text_inputs), 1)
-        return self.linear(comb_inputs)
+        return self.main(comb_inputs)
 
 
-def train(model, data_loader, epochs=5):
+def train(model, data_loader, epochs=6):
+
     writer = SummaryWriter()
 
-    optimiser = optim.Adam(model.parameters(), lr=0.001)
+    optimiser = optim.Adam(model.parameters(), lr=0.003)
 
     criterion = nn.CrossEntropyLoss()
 
@@ -79,14 +80,45 @@ def train(model, data_loader, epochs=5):
         now = str(datetime.datetime.now().time())
         path = f'model_evaluation/multimodal_model_evaluations/multimodal_model_at_{now}_epoch:{epoch}'
         os.mkdir(path)
-        torch.save(model.state_dict(), f'{path}/weights.pt')
+        torch.save(model.state_dict(), f'{path}/model_state_dict.pt')
+        torch.save(optimiser.state_dict(), f'{path}/opt_date_dict.pt')
         with open(f'{path}/accuracy.txt', 'w') as f:
             f.write(f'{ave_accuracy}')
 
+def test(model, validation_dataloader):
+    writer = SummaryWriter()
+    batch_index = 0
+    with torch.no_grad():
+        accuracy = []
+        n_samples = 0
+        for (image_features, text_features), labels in validation_dataloader:
+                predictions = model((image_features, text_features))
+                accuracy_batch = torch.sum(torch.argmax(predictions, dim=1) == labels).item()/len(labels)
+                accuracy.append(accuracy_batch)
+                ave_accuracy = np.mean(accuracy)
+                writer.add_scalar('Average Test Accuracy', ave_accuracy, batch_index)
+                print(ave_accuracy)
+                batch_index += 1
+
+def split_train_test(dataset, train_percentage: float = 0.8):
+    train_split = int(len(dataset) * train_percentage)
+    train_dataset, validation_dataset = torch.utils.data.random_split(
+        dataset, [train_split, len(dataset) - train_split]
+)
+    return train_dataset, validation_dataset
+
+
 if __name__ == '__main__':
     dataset = MultiModalDataset()
-    dataloader = DataLoader(dataset, batch_size=12, shuffle=True)
+    train_dataset, validation_dataset = split_train_test(dataset)
+    train_dataloader = DataLoader(train_dataset, batch_size=12, shuffle=True)
+    validation_dataloader = DataLoader(validation_dataset, batch_size=24, shuffle=True)
+
     model = CombinedModel()
-    train(model, dataloader)
+    model.load_state_dict(torch.load('/Users/jacobmetz/Documents/GitHub/facebook-marketplaces-recommendation-ranking-system/model_evaluation/multimodal_model_evaluations/multimodal_model_at_01:48:41.515355_epoch:4/weights.pt'))
+    model.eval()
+    train(model, train_dataloader)
+    test(model, validation_dataloader)
+
     with open('multi_decoder.pkl', 'wb') as f:
         pickle.dump(dataset.decoder, f)
